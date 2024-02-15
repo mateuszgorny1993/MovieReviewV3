@@ -53,6 +53,7 @@
                         <form:password path="password" class="form-control" placeholder="Podaj hasło" id="password" onkeyup="checkPasswordStrength();" required="true"/>
                         <div id="password-strength-status" class="progress" style="margin-top: 10px;"></div>
                         <div id="password-strength-text" style="text-align: center; margin-top: 10px;"></div>
+                        <span toggle="#password" class="fa fa-fw fa-eye field-icon toggle-password"></span>
                         <form:errors path="password" class="text-danger" />
                     </div>
 
@@ -70,26 +71,8 @@
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" crossorigin="anonymous"></script>
-<script>
-    function checkPasswordStrength() {
-        var strengthStatus = document.getElementById('password-strength-status');
-        var strengthText = document.getElementById('password-strength-text');
-        var strongRegex = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})');
-        var mediumRegex = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{6,})');
-        var password = document.getElementById('password').value;
+<script src="${pageContext.request.contextPath}/resources/js/script.js"></script>
 
-        if(strongRegex.test(password)) {
-            strengthStatus.innerHTML = '<div class="progress-bar strength-strong" style="width: 100%">Silne</div>';
-            strengthText.innerHTML = "Twoje hasło jest silne.";
-        } else if(mediumRegex.test(password)) {
-            strengthStatus.innerHTML = '<div class="progress-bar strength-medium" style="width: 70%">Średnie</div>';
-            strengthText.innerHTML = "Twoje hasło jest średnie.";
-        } else {
-            strengthStatus.innerHTML = '<div class="progress-bar strength-weak" style="width: 40%">Słabe</div>';
-            strengthText.innerHTML = "Twoje hasło jest słabe.";
-        }
-    }
-</script>
 
 </body>
 </html>
