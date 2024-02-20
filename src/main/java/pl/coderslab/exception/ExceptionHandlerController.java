@@ -1,9 +1,9 @@
-package pl.coderslab.controller;
+package pl.coderslab.exception;
 
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import pl.coderslab.exception.UserAlreadyExistsException;
+
 
 @ControllerAdvice
 public class ExceptionHandlerController {
