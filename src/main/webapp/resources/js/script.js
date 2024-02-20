@@ -18,9 +18,7 @@ function checkPasswordStrength() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    // Przełączanie widoczności hasła
     $(".toggle-password").click(function () {
-        // Pobranie pola, którego dotyczy przełącznik
         var input = $($(this).attr("toggle"));
         // Sprawdzenie typu inputa i zmiana typu
         if (input.attr("type") == "password") {

@@ -16,21 +16,19 @@
     <div class="container pt-4 pb-4">
         <div class="border-dashed view-height">
             <div class="container w-25">
-                <!-- Dodanie action="/login" i method="post" do formularza -->
-                <form class="padding-small text-center" action="${pageContext.request.contextPath}/login" method="post" modelAttribute="user">
+                <form:form class="padding-small text-center" action="${pageContext.request.contextPath}/login" method="post">
                     <h1 class="text-color-darker">Logowanie</h1>
-                    <!-- Ustawienie pola input dla emaila -->
                     <div class="form-group">
                         <input type="text" class="form-control" id="username" name="username" placeholder="Podaj adres email">
                     </div>
-                    <!-- Zmiana typu input na password -->
                     <div class="form-group">
                         <input type="password" class="form-control" id="password" name="password" placeholder="Podaj hasło">
                     </div>
-                    <!-- Dodanie przycisku do logowania -->
                     <button class="btn btn-color rounded-0" type="submit">Zaloguj</button>
-                </form>
-                <!-- Opcjonalnie: Dodanie komunikatu o błędzie logowania -->
+                </form:form>
+                <div class="text-center mt-3">
+                    <a href="${pageContext.request.contextPath}/forgot-password" class="btn btn-link">Zapomniałem hasła</a>
+                </div>
                 <% if (request.getParameter("error") != null) { %>
                 <div class="alert alert-danger" role="alert">
                     Niepoprawny login lub hasło.
