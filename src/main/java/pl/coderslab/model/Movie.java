@@ -1,30 +1,55 @@
 package pl.coderslab.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
+@Table(name = "movies")
 public class Movie {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
+
+    @Column(length = 1000)
     private String description;
 
+    @Column(name = "release_date")
     @Temporal(TemporalType.DATE)
     private Date releaseDate;
 
+    @Column(name = "poster_path")
     private String posterPath;
-    private Double rating;
-    private Double ocenaOmdb;
+
+    private Double rating; // Ocena nasza
+
+    @Column(name = "ocena_omdb")
+    private Double ocenaOmdb; // Ocena OMDB
+
+    @Column(name = "is_approved", nullable = false)
     private Boolean isApproved;
+
+    @Column(nullable = false)
+    private Integer views;
+
+    @ManyToOne
+    @JoinColumn(name = "director_id")
+    private Director director;
+
+    @ManyToMany
+    @JoinTable(
+            name = "movie_actor",
+            joinColumns = @JoinColumn(name = "movie_id"),
+            inverseJoinColumns = @JoinColumn(name = "actor_id")
+    )
+    private Set<Actor> actors = new HashSet<>();
+
+    @OneToMany(mappedBy = "movie")
+    private Set<Trailer> trailers = new HashSet<>();
 
     public Movie() {
     }
@@ -85,12 +110,43 @@ public class Movie {
         this.ocenaOmdb = ocenaOmdb;
     }
 
-    public Boolean getIsApproved() {
+    public Boolean getApproved() {
         return isApproved;
     }
 
-    public void setIsApproved(Boolean isApproved) {
-        this.isApproved = isApproved;
+    public void setApproved(Boolean approved) {
+        isApproved = approved;
     }
 
+    public Integer getViews() {
+        return views;
+    }
+
+    public void setViews(Integer views) {
+        this.views = views;
+    }
+
+    public Director getDirector() {
+        return director;
+    }
+
+    public void setDirector(Director director) {
+        this.director = director;
+    }
+
+    public Set<Actor> getActors() {
+        return actors;
+    }
+
+    public void setActors(Set<Actor> actors) {
+        this.actors = actors;
+    }
+
+    public Set<Trailer> getTrailers() {
+        return trailers;
+    }
+
+    public void setTrailers(Set<Trailer> trailers) {
+        this.trailers = trailers;
+    }
 }

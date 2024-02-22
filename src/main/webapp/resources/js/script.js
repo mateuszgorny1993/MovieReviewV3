@@ -1,3 +1,20 @@
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Pobranie bieżącego parametru sortowania z localStorage
+    var currentSortType = localStorage.getItem('currentSortType');
+    // Jeśli istnieje bieżący parametr sortowania, ustawiamy wartość wybraną w rozwijanym menu na podstawie tego parametru
+    if (currentSortType) {
+        document.getElementById('sortOptions').value = currentSortType;
+    }
+});
+
+function sortMovies(sortType) {
+    // Zapisanie bieżącego parametru sortowania do localStorage
+    localStorage.setItem('currentSortType', sortType);
+    // Przekierowanie do bieżącego URL z dodanym parametrem sortowania
+    window.location.href = window.location.pathname + sortType;
+}
+
 function checkPasswordStrength() {
     var strengthStatus = document.getElementById('password-strength-status');
     var strengthText = document.getElementById('password-strength-text');
@@ -21,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
     $(".toggle-password").click(function () {
         var input = $($(this).attr("toggle"));
         // Sprawdzenie typu inputa i zmiana typu
-        if (input.attr("type") == "password") {
+        if (input.attr("type") === "password") {
             input.attr("type", "text");
             $(this).addClass("fa-eye-slash");
             $(this).removeClass("fa-eye");
