@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import pl.coderslab.model.Actor;
@@ -62,6 +63,22 @@ public class GuestController {
         model.addAttribute("newReleasesPage", newReleasesPage);
         model.addAttribute("currentSort", sortType);
         return "news";
+    }
+
+    @GetMapping("/movies/details/{id}")
+    public String showMovieDetails(@PathVariable Long id, Model model) {
+        guestService.getMovieDetails(id).ifPresent(movie -> model.addAttribute("movie", movie));
+        return "movieDetails";
+    }
+    @GetMapping("/actors/details/{id}")
+    public String showActorDetails(@PathVariable Long id, Model model) {
+        guestService.getActorDetails(id).ifPresent(actor -> model.addAttribute("actor",actor));
+        return "actorDetails";
+    }
+    @GetMapping("/directors/details/{id}")
+    public String showDirectorDetails(@PathVariable Long id, Model model) {
+        guestService.getDirectorDetails(id).ifPresent(director -> model.addAttribute("director",director));
+        return "directorDetails";
     }
 
 }

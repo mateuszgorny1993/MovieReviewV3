@@ -50,6 +50,16 @@ public class Movie {
 
     @OneToMany(mappedBy = "movie")
     private Set<Trailer> trailers = new HashSet<>();
+    @Column(name = "duration")
+    private Integer duration;
+
+    @ManyToMany
+    @JoinTable(
+            name = "movie_category",
+            joinColumns = @JoinColumn(name = "movie_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private Set<Category> categories = new HashSet<>();
 
     public Movie() {
     }
@@ -148,5 +158,21 @@ public class Movie {
 
     public void setTrailers(Set<Trailer> trailers) {
         this.trailers = trailers;
+    }
+
+    public Set<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(Set<Category> categories) {
+        this.categories = categories;
+    }
+
+    public Integer getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Integer duration) {
+        this.duration = duration;
     }
 }

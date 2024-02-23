@@ -1,6 +1,8 @@
 package pl.coderslab.model;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -31,6 +33,14 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role = Role.USER;
+    @OneToMany(mappedBy = "user")
+    private Set<Comment> comments = new HashSet<>();
+
+    @OneToMany(mappedBy = "user")
+    private Set<Review> reviews = new HashSet<>();
+
+    public User() {
+    }
 
     public Long getId() {
         return id;
@@ -94,6 +104,22 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public Set<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(Set<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public Set<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(Set<Review> reviews) {
+        this.reviews = reviews;
     }
 }
 

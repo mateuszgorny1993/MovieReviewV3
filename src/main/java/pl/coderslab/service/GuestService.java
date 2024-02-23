@@ -12,6 +12,8 @@ import pl.coderslab.repository.ActorRepository;
 import pl.coderslab.repository.DirectorRepository;
 import pl.coderslab.repository.MovieRepository;
 
+import java.util.Optional;
+
 @Service
 public class GuestService {
 
@@ -68,6 +70,18 @@ public class GuestService {
         };
         Pageable pageable = PageRequest.of(page, size, sort);
         return movieRepository.findUpcomingMovies(pageable);
+    }
+
+    public Optional<Movie> getMovieDetails(Long id) {
+        return movieRepository.findByIdWithActorsAndTrailersAndCategoriesAndIsApprovedTrue(id);
+    }
+
+    public Optional<Actor> getActorDetails(Long id) {
+        return actorRepository.findByIdAndIsApprovedTrue(id);
+    }
+
+    public Optional<Director> getDirectorDetails(Long id) {
+        return directorRepository.findByIdAndIsApprovedTrue(id);
     }
 
 }
