@@ -22,7 +22,7 @@ public class SecurityConfig {
         http
                 .cors().disable().csrf().disable() // Dla uproszczenia, w rzeczywistych aplikacjach należy odpowiednio skonfigurować CORS i CSRF.
                 .authorizeHttpRequests()
-                .requestMatchers("/", "/login", "/register", "/resources/css/**", "/resources/js/**","/movies/**","/actors/**","/directors/**").permitAll()
+                .requestMatchers("/", "/login", "/register", "/resources/css/**", "/resources/js/**","/guest/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()

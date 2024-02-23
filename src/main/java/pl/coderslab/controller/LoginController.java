@@ -8,6 +8,6 @@ public class LoginController {
 
     @GetMapping("/login")
     public String loginPage() {
-        return "login"; // nazwa pliku JSP dla strony logowania
+        return "login";
     }
 }
