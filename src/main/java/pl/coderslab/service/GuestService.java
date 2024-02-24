@@ -12,7 +12,8 @@ import pl.coderslab.repository.ActorRepository;
 import pl.coderslab.repository.DirectorRepository;
 import pl.coderslab.repository.MovieRepository;
 
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class GuestService {
@@ -84,4 +85,23 @@ public class GuestService {
         return directorRepository.findByIdAndIsApprovedTrue(id);
     }
 
+    public Set<Movie> getSimilarMovies(Long movieId) {
+        Optional<Movie> movieOptional = getMovieDetails(movieId);
+        if (movieOptional.isPresent()) {
+            Movie movie = movieOptional.get();
+            Set<Movie> similarMovies = new LinkedHashSet<>();
+            similarMovies.addAll(movieRepository.findSimilarByCategory(movie.getCategories(), movie.getId()));
+            similarMovies.addAll(movieRepository.findSimilarByActors(movie.getActors(), movie.getId()));
+            return similarMovies;
+        }
+        return Collections.emptySet();
+    }
+
+    public List<Movie> getSimilarMoviesLimited(Long movieId) {
+        Set<Movie> similarMovies = getSimilarMovies(movieId);
+        return similarMovies.stream()
+                .sorted(Comparator.comparing(Movie::getRating).reversed())
+                .limit(5)
+                .collect(Collectors.toList());
+    }
 }

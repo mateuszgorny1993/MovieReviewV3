@@ -71,8 +71,40 @@
                     </div>
                     <div class="col-6 border-bottom border-3"><h3 class="text-uppercase">Zwiastuny filmu</h3>
                         <c:forEach items="${movie.trailers}" var="trailer">
-                            <iframe width="560" height="315" src="https://www.youtube.com/embed/${trailer.youtubeTrailerId}" frameborder="0" allowfullscreen></iframe>
+                            <iframe width="560" height="315"
+                                    src="https://www.youtube.com/embed/${trailer.youtubeTrailerId}" frameborder="0"
+                                    allowfullscreen></iframe>
                         </c:forEach>
+                    </div>
+                </div>
+                <div class="row d-flex">
+                    <div class="col-12 border-bottom border-3"><h3 class="text-uppercase">Podobne filmy</h3>
+                        <table class="table">
+                            <thead>
+                            <tr class="d-flex text-color-darker">
+                                <th scope="col" class="col-3">TYTUŁ</th>
+                                <th scope="col" class="col-3">OPIS</th>
+                                <th scope="col" class="col-2">OCENA</th>
+                                <th scope="col" class="col-2">WYŚWIETLENIA</th>
+                                <th scope="col" class="col-2">SZCZEGÓŁY</th>
+                            </tr>
+                            </thead>
+                            <c:if test="${not empty similarMovies}">
+                                <tbody class="text-color-lighter">
+                                <c:forEach items="${similarMovies}" var="similarMovie">
+                                    <tr class="d-flex">
+                                        <td class="col-3">${similarMovie.title}</td>
+                                        <td class="col-3">${similarMovie.description}</td>
+                                        <td class="col-2">${similarMovie.rating}</td>
+                                        <td class="col-2">${similarMovie.views}</td>
+                                        <td class="col-2"><a href="/guest/movies/details/${similarMovie.id}"
+                                                             class="btn btn-info rounded-0 text-light">Szczegóły</a>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                                </tbody>
+                            </c:if>
+                        </table>
                     </div>
                 </div>
                 <!-- Miejsce na podobne filmy, recenzje i komentarze -->

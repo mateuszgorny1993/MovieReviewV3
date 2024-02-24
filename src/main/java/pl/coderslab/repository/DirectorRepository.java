@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface DirectorRepository extends JpaRepository<Director, Long> {
     Page<Director> findByIsApprovedTrue(Pageable pageable);
+
     Optional<Director> findByIdAndIsApprovedTrue(Long id);
 }
 

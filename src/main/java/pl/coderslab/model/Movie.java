@@ -60,6 +60,8 @@ public class Movie {
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
     private Set<Category> categories = new HashSet<>();
+    @Column(name = "imdb_id",nullable = true)
+    private String imdbId; // ID IMDB filmu
 
     public Movie() {
     }
@@ -175,4 +177,28 @@ public class Movie {
     public void setDuration(Integer duration) {
         this.duration = duration;
     }
+
+    public String getImdbId() {
+        return imdbId;
+    }
+
+    public void setImdbId(String imdbId) {
+        this.imdbId = imdbId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Movie movie = (Movie) o;
+
+        return id != null ? id.equals(movie.id) : movie.id == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
 }

@@ -11,15 +11,22 @@ import pl.coderslab.model.Actor;
 import pl.coderslab.model.Director;
 import pl.coderslab.model.Movie;
 import pl.coderslab.service.GuestService;
+import pl.coderslab.service.MovieUpdateService;
+
+import java.util.List;
+
 
 @Controller
 @RequestMapping("/guest")
 public class GuestController {
     private final GuestService guestService;
+    private final MovieUpdateService movieUpdateService;
 
-    public GuestController(GuestService guestService) {
+    public GuestController(GuestService guestService, MovieUpdateService movieUpdateService) {
         this.guestService = guestService;
+        this.movieUpdateService = movieUpdateService;
     }
+
     @GetMapping("/movies")
     public String listMovies(
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -31,6 +38,7 @@ public class GuestController {
         model.addAttribute("currentSort", sortType);
         return "movies";
     }
+
     @GetMapping("/actors")
     public String listActors(
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -42,6 +50,7 @@ public class GuestController {
         model.addAttribute("currentSort", sortType);
         return "actors";
     }
+
     @GetMapping("/directors")
     public String listDirectors(
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -49,35 +58,47 @@ public class GuestController {
             @RequestParam(name = "sortType", defaultValue = "lastName") String sortType,
             Model model) {
         Page<Director> directorPage = guestService.getApprovedDirectors(page, size, sortType);
-        model.addAttribute("directorsPage",directorPage);
+        model.addAttribute("directorsPage", directorPage);
         model.addAttribute("currentSort", sortType);
         return "directors";
     }
+
     @GetMapping("/new")
     public String showNewReleases(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "5") int size,
             @RequestParam(name = "sortType", defaultValue = "title") String sortType,
             Model model) {
-        Page<Movie> newReleasesPage = guestService.getUpcomingMovies(page, size,sortType);
+        Page<Movie> newReleasesPage = guestService.getUpcomingMovies(page, size, sortType);
         model.addAttribute("newReleasesPage", newReleasesPage);
         model.addAttribute("currentSort", sortType);
         return "news";
     }
 
+
     @GetMapping("/movies/details/{id}")
     public String showMovieDetails(@PathVariable Long id, Model model) {
-        guestService.getMovieDetails(id).ifPresent(movie -> model.addAttribute("movie", movie));
+        guestService.getMovieDetails(id).ifPresent(movie -> {
+            movieUpdateService.updateMovieWithOmdbData(movie.getId());
+            Movie updatedMovie = guestService.getMovieDetails(movie.getId()).orElse(movie);
+            model.addAttribute("movie", updatedMovie);
+        });
+        List<Movie> similarMovies = guestService.getSimilarMoviesLimited(id);
+        model.addAttribute("similarMovies", similarMovies);
+
         return "movieDetails";
     }
+
+
     @GetMapping("/actors/details/{id}")
     public String showActorDetails(@PathVariable Long id, Model model) {
-        guestService.getActorDetails(id).ifPresent(actor -> model.addAttribute("actor",actor));
+        guestService.getActorDetails(id).ifPresent(actor -> model.addAttribute("actor", actor));
         return "actorDetails";
     }
+
     @GetMapping("/directors/details/{id}")
     public String showDirectorDetails(@PathVariable Long id, Model model) {
-        guestService.getDirectorDetails(id).ifPresent(director -> model.addAttribute("director",director));
+        guestService.getDirectorDetails(id).ifPresent(director -> model.addAttribute("director", director));
         return "directorDetails";
     }
 
