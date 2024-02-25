@@ -3,15 +3,15 @@ package pl.coderslab.controller;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import pl.coderslab.dto.MovieRatingDto;
 import pl.coderslab.model.Actor;
 import pl.coderslab.model.Director;
 import pl.coderslab.model.Movie;
 import pl.coderslab.service.GuestService;
-import pl.coderslab.service.MovieUpdateService;
+import pl.coderslab.service.MovieService;
 
 import java.util.List;
 
@@ -20,11 +20,11 @@ import java.util.List;
 @RequestMapping("/guest")
 public class GuestController {
     private final GuestService guestService;
-    private final MovieUpdateService movieUpdateService;
+    private final MovieService movieService;
 
-    public GuestController(GuestService guestService, MovieUpdateService movieUpdateService) {
+    public GuestController(GuestService guestService, MovieService movieService) {
         this.guestService = guestService;
-        this.movieUpdateService = movieUpdateService;
+        this.movieService = movieService;
     }
 
     @GetMapping("/movies")
@@ -79,15 +79,16 @@ public class GuestController {
     @GetMapping("/movies/details/{id}")
     public String showMovieDetails(@PathVariable Long id, Model model) {
         guestService.getMovieDetails(id).ifPresent(movie -> {
-            movieUpdateService.updateMovieWithOmdbData(movie.getId());
-            Movie updatedMovie = guestService.getMovieDetails(movie.getId()).orElse(movie);
-            model.addAttribute("movie", updatedMovie);
+            movieService.incrementMovieViews(movie.getId());
+            movieService.updateMovieWithOmdbData(movie.getId());
+            model.addAttribute("movie", movie);
         });
         List<Movie> similarMovies = guestService.getSimilarMoviesLimited(id);
         model.addAttribute("similarMovies", similarMovies);
 
         return "movieDetails";
     }
+
 
 
     @GetMapping("/actors/details/{id}")
@@ -101,5 +102,17 @@ public class GuestController {
         guestService.getDirectorDetails(id).ifPresent(director -> model.addAttribute("director", director));
         return "directorDetails";
     }
+    @PostMapping("/ratemovie")
+    public String rateMovie(MovieRatingDto movieRatingDto, BindingResult result, RedirectAttributes redirectAttributes) {
+        if (result.hasErrors() || movieRatingDto.getRating() == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Proszę wybrać ocenę.");
+            return "redirect:/guest/movies/details/" + movieRatingDto.getMovieId();
+        }
+        movieService.addOrUpdateMovieRating(movieRatingDto);
+        redirectAttributes.addFlashAttribute("message", "Dziękujemy za ocenę filmu!");
+        return "redirect:/guest/movies/details/" + movieRatingDto.getMovieId();
+    }
+
+
 
 }

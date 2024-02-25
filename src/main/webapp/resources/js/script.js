@@ -33,6 +33,14 @@ function checkPasswordStrength() {
         strengthText.innerHTML = "Twoje hasło jest słabe.";
     }
 }
+function validateForm() {
+    var ratingValue = document.getElementById("movieRating").value;
+    if (ratingValue === "Twoja ocena...") { // Załóżmy, że "Twoja ocena..." to wartość domyślna
+        alert("Proszę wybrać ocenę.");
+        return false;
+    }
+    return true;
+}
 
 document.addEventListener("DOMContentLoaded", function () {
     $(".toggle-password").click(function () {

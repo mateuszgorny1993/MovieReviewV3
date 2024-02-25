@@ -14,7 +14,13 @@
         <hr>
         <div class="orange-line w-100"></div>
     </div>
+    <c:if test="${not empty message}">
+        <div class="alert alert-success" role="alert">
+                ${message}
+        </div>
+    </c:if>
 </section>
+
 <section class="width-medium text-color-darker">
     <div class="pb-2">
         <div class="border-dashed view-height w-100">
@@ -22,11 +28,33 @@
                 <div class="row border-bottom border-3">
                     <div class="col"><h3 class="color-header text-uppercase">
                         Reżyseria: ${movie.director.firstName} ${movie.director.lastName}</h3></div>
-                    <div class="col d-flex justify-content-end mb-2"><a href="/guest/movies"
-                                                                        class="btn btn-color rounded-0 pt-0 pb-0 pr-4 pl-4">Powrót</a>
+                    <div class="col d-flex justify-content-end mb-2">
+                        <a href="/guest/movies" class="btn btn-color rounded-0 pt-0 pb-0 pr-2 pl-2">Powrót</a>
+                        <c:if test="${not empty errorMessage}">
+                            <div class="alert alert-danger" role="alert">
+                                    ${errorMessage}
+                            </div>
+                        </c:if>
+                        <form action="/guest/ratemovie" method="POST" style="display: inline-block;">
+                            <input type="hidden" name="movieId" value="${movie.id}"/>
+                            <select class="form-select rounded-0 pt-0 pb-0 pr-2 pl-2" id="movieRating" name="rating" onsubmit="return validateForm()" style="width: auto; margin-right: 10px;">
+                                <option selected>Twoja ocena...</option>
+                                <option value="10">10</option>
+                                <option value="9">9</option>
+                                <option value="8">8</option>
+                                <option value="7">7</option>
+                                <option value="6">6</option>
+                                <option value="5">5</option>
+                                <option value="4">4</option>
+                                <option value="3">3</option>
+                                <option value="2">2</option>
+                                <option value="1">1</option>
+                                <option value="0">0</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary rounded-0 pt-0 pb-0">Oceń</button>
+                        </form>
                     </div>
                 </div>
-
                 <table class="table borderless">
                     <tbody>
                     <tr class="d-flex">
