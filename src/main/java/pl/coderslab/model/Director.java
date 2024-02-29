@@ -1,6 +1,8 @@
 package pl.coderslab.model;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "directors")
@@ -20,6 +22,10 @@ public class Director {
 
     @Column(name = "is_approved", nullable = false)
     private Boolean isApproved;
+    @Column(nullable = false)
+    private Double rating;
+    @OneToMany(mappedBy = "director")
+    private Set<Movie> movies = new HashSet<>();
 
     public Director() {
     }
@@ -62,5 +68,21 @@ public class Director {
 
     public void setApproved(Boolean approved) {
         isApproved = approved;
+    }
+
+    public Double getRating() {
+        return rating;
+    }
+
+    public void setRating(Double rating) {
+        this.rating = rating;
+    }
+
+    public Set<Movie> getMovies() {
+        return movies;
+    }
+
+    public void setMovies(Set<Movie> movies) {
+        this.movies = movies;
     }
 }

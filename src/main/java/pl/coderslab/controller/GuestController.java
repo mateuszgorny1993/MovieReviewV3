@@ -6,25 +6,31 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import pl.coderslab.dto.ActorRatingDto;
+import pl.coderslab.dto.DirectorRatingDto;
 import pl.coderslab.dto.MovieRatingDto;
 import pl.coderslab.model.Actor;
 import pl.coderslab.model.Director;
 import pl.coderslab.model.Movie;
-import pl.coderslab.service.GuestService;
+import pl.coderslab.service.ActorService;
+import pl.coderslab.service.DirectorService;
 import pl.coderslab.service.MovieService;
 
 import java.util.List;
+import java.util.Set;
 
 
 @Controller
 @RequestMapping("/guest")
 public class GuestController {
-    private final GuestService guestService;
     private final MovieService movieService;
+    private final ActorService actorService;
+    private final DirectorService directorService;
 
-    public GuestController(GuestService guestService, MovieService movieService) {
-        this.guestService = guestService;
+    public GuestController(MovieService movieService, ActorService actorService, DirectorService directorService) {
         this.movieService = movieService;
+        this.actorService = actorService;
+        this.directorService = directorService;
     }
 
     @GetMapping("/movies")
@@ -33,75 +39,25 @@ public class GuestController {
             @RequestParam(name = "size", defaultValue = "5") int size,
             @RequestParam(name = "sortType", defaultValue = "title") String sortType,
             Model model) {
-        Page<Movie> moviesPage = guestService.getApprovedMovies(page, size, sortType);
+        Page<Movie> moviesPage = movieService.getApprovedMovies(page, size, sortType);
         model.addAttribute("moviesPage", moviesPage);
         model.addAttribute("currentSort", sortType);
         return "movies";
     }
 
-    @GetMapping("/actors")
-    public String listActors(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "5") int size,
-            @RequestParam(name = "sortType", defaultValue = "lastName") String sortType,
-            Model model) {
-        Page<Actor> actorsPage = guestService.getApprovedActors(page, size, sortType);
-        model.addAttribute("actorsPage", actorsPage);
-        model.addAttribute("currentSort", sortType);
-        return "actors";
-    }
-
-    @GetMapping("/directors")
-    public String listDirectors(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "5") int size,
-            @RequestParam(name = "sortType", defaultValue = "lastName") String sortType,
-            Model model) {
-        Page<Director> directorPage = guestService.getApprovedDirectors(page, size, sortType);
-        model.addAttribute("directorsPage", directorPage);
-        model.addAttribute("currentSort", sortType);
-        return "directors";
-    }
-
-    @GetMapping("/new")
-    public String showNewReleases(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "5") int size,
-            @RequestParam(name = "sortType", defaultValue = "title") String sortType,
-            Model model) {
-        Page<Movie> newReleasesPage = guestService.getUpcomingMovies(page, size, sortType);
-        model.addAttribute("newReleasesPage", newReleasesPage);
-        model.addAttribute("currentSort", sortType);
-        return "news";
-    }
-
-
     @GetMapping("/movies/details/{id}")
     public String showMovieDetails(@PathVariable Long id, Model model) {
-        guestService.getMovieDetails(id).ifPresent(movie -> {
+        movieService.getMovieDetails(id).ifPresent(movie -> {
             movieService.incrementMovieViews(movie.getId());
             movieService.updateMovieWithOmdbData(movie.getId());
             model.addAttribute("movie", movie);
         });
-        List<Movie> similarMovies = guestService.getSimilarMoviesLimited(id);
+        List<Movie> similarMovies = movieService.getSimilarMoviesLimited(id);
         model.addAttribute("similarMovies", similarMovies);
 
         return "movieDetails";
     }
 
-
-
-    @GetMapping("/actors/details/{id}")
-    public String showActorDetails(@PathVariable Long id, Model model) {
-        guestService.getActorDetails(id).ifPresent(actor -> model.addAttribute("actor", actor));
-        return "actorDetails";
-    }
-
-    @GetMapping("/directors/details/{id}")
-    public String showDirectorDetails(@PathVariable Long id, Model model) {
-        guestService.getDirectorDetails(id).ifPresent(director -> model.addAttribute("director", director));
-        return "directorDetails";
-    }
     @PostMapping("/ratemovie")
     public String rateMovie(MovieRatingDto movieRatingDto, BindingResult result, RedirectAttributes redirectAttributes) {
         if (result.hasErrors() || movieRatingDto.getRating() == null) {
@@ -113,6 +69,87 @@ public class GuestController {
         return "redirect:/guest/movies/details/" + movieRatingDto.getMovieId();
     }
 
+    @GetMapping("/actors")
+    public String listActors(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "5") int size,
+            @RequestParam(name = "sortType", defaultValue = "lastName") String sortType,
+            Model model) {
+        Page<Actor> actorsPage = actorService.getApprovedActors(page, size, sortType);
+        model.addAttribute("actorsPage", actorsPage);
+        model.addAttribute("currentSort", sortType);
+        return "actors";
+    }
+
+    @GetMapping("/actors/details/{id}")
+    public String showActorDetails(@PathVariable Long id, Model model) {
+        actorService.getActorDetails(id).ifPresent(actor -> {
+            actorService.incrementActorViews(actor.getId());
+            model.addAttribute("actor", actor);
+        });
+        List<Actor> relatedActors = actorService.getRelatedActorsLimited(id);
+        model.addAttribute("relatedActors", relatedActors);
+
+        return "actorDetails";
+    }
+
+
+    @PostMapping("/rateactor")
+    public String rateActor(ActorRatingDto actorRatingDto, BindingResult result, RedirectAttributes redirectAttributes) {
+        if (result.hasErrors() || actorRatingDto.getRating() == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Proszę wybrać ocenę.");
+            return "redirect:/guest/actors/details/" + actorRatingDto.getActorId();
+        }
+        actorService.addOrUpdateActorRating(actorRatingDto);
+        redirectAttributes.addFlashAttribute("message", "Dziękujemy za ocenę aktora!");
+        return "redirect:/guest/actors/details/" + actorRatingDto.getActorId();
+    }
+
+
+    @GetMapping("/directors")
+    public String listDirectors(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "5") int size,
+            @RequestParam(name = "sortType", defaultValue = "lastName") String sortType,
+            Model model) {
+        Page<Director> directorPage = directorService.getApprovedDirectors(page, size, sortType);
+        model.addAttribute("directorsPage", directorPage);
+        model.addAttribute("currentSort", sortType);
+        return "directors";
+    }
+
+    @GetMapping("/directors/details/{id}")
+    public String showDirectorDetails(@PathVariable Long id, Model model) {
+        directorService.incrementDirectorViews(id);
+        Director director = directorService.getDirectorDetails(id)
+                .orElseThrow(() -> new IllegalArgumentException("Director not found for ID: " + id));
+        model.addAttribute("director", director);
+
+        Set<Actor> relatedActors = actorService.findActorsByDirector(director);
+        model.addAttribute("relatedActors", relatedActors);
+
+        return "directorDetails";
+    }
+    @PostMapping("/ratedirector")
+    public String rateDirector(@ModelAttribute DirectorRatingDto directorRatingDto, RedirectAttributes redirectAttributes) {
+        directorService.addOrUpdateDirectorRating(directorRatingDto);
+        redirectAttributes.addFlashAttribute("message", "Dziękujemy za ocenę reżysera!");
+        return "redirect:/guest/directors/details/" + directorRatingDto.getDirectorId();
+    }
+
+
+
+    @GetMapping("/new")
+    public String showNewReleases(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "5") int size,
+            @RequestParam(name = "sortType", defaultValue = "title") String sortType,
+            Model model) {
+        Page<Movie> newReleasesPage = movieService.getUpcomingMovies(page, size, sortType);
+        model.addAttribute("newReleasesPage", newReleasesPage);
+        model.addAttribute("currentSort", sortType);
+        return "news";
+    }
 
 
 }
