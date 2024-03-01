@@ -27,7 +27,7 @@ public class SecurityConfig {
                 .and()
                 .formLogin()
                 .loginPage("/login")
-                .defaultSuccessUrl("/dashboard", true)
+                .defaultSuccessUrl("/app/dashboard", true)
                 .permitAll()
                 .and()
                 .logout()

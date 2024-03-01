@@ -90,8 +90,23 @@ public class ActorService {
                 .limit(5)
                 .collect(Collectors.toList());
     }
+
     public Set<Actor> findActorsByDirector(Director director) {
         return actorRepository.findActorsByDirector(director);
+    }
+
+    public Actor findByFirstNameAndLastName(String firstName, String lastName) {
+        return actorRepository.findByFirstNameAndLastName(firstName, lastName)
+                .orElseGet(() -> {
+                    Actor newActor = new Actor();
+                    newActor.setFirstName(firstName);
+                    newActor.setLastName(lastName);
+                    return actorRepository.save(newActor);
+                });
+    }
+
+    public void save(Actor actor) {
+        actorRepository.save(actor);
     }
 
 }

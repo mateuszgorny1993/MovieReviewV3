@@ -17,15 +17,16 @@ public class Actor {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    private Double rating;
+    @Column(nullable = false)
+    private Double rating = 0.0;
 
     @Column(nullable = false)
-    private Integer views;
+    private Integer views = 0;
 
     @Column(name = "is_approved", nullable = false)
-    private Boolean isApproved;
+    private Boolean isApproved = true;
 
-    @ManyToMany(mappedBy = "actors",fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "actors", fetch = FetchType.EAGER)
     private Set<Movie> movies = new HashSet<>();
 
     public Actor() {

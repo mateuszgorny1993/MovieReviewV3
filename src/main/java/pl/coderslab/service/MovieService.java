@@ -64,12 +64,13 @@ public class MovieService {
         String imdbId = movie.getImdbId();
         if (imdbId != null && !imdbId.trim().isEmpty()) {
             OmdbMovieDetails omdbMovieDetails = omdbApiService.fetchMovieDetails(imdbId);
-            if (omdbMovieDetails != null && omdbMovieDetails.getImdbRating() != null) {
+            if (omdbMovieDetails != null && omdbMovieDetails.getOcenaOmdb() != null) {
                 try {
-                    movie.setOcenaOmdb(Double.parseDouble(omdbMovieDetails.getImdbRating()));
+                    movie.setOcenaOmdb(Double.parseDouble(omdbMovieDetails.getOcenaOmdb()));
+                    movie.setPosterPath(omdbMovieDetails.getPosterPath());
                     movieRepository.save(movie);
                 } catch (NumberFormatException e) {
-                    System.err.println("Error parsing IMDB rating: " + omdbMovieDetails.getImdbRating());
+                    System.err.println("Error parsing IMDB rating: " + omdbMovieDetails.getOcenaOmdb());
                 }
             }
         }
@@ -123,4 +124,11 @@ public class MovieService {
     }
 
 
+    public void save(Movie movie) {
+        movieRepository.save(movie);
+    }
+
+    public List<Movie> findByImdbId(String imdbId) {
+        return movieRepository.findByImdbId(imdbId);
+    }
 }

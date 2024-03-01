@@ -5,7 +5,10 @@ import org.springframework.stereotype.Service;
 import pl.coderslab.dto.RegistrationForm;
 import pl.coderslab.exception.UserAlreadyExistsException;
 import pl.coderslab.model.User;
+import pl.coderslab.model.Role;
 import pl.coderslab.repository.UserRepository;
+
+import java.util.List;
 
 @Service
 public class UserService {
@@ -48,6 +51,10 @@ public class UserService {
 
     private boolean usernameExist(String username) {
         return userRepository.existsByUsername(username);
+    }
+
+    public List<String> findEmailsByModeratorRole() {
+        return userRepository.findEmailsByRole(Role.MODERATOR);
     }
 
 }

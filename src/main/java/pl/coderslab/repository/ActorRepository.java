@@ -17,6 +17,7 @@ import java.util.Set;
 @Repository
 public interface ActorRepository extends JpaRepository<Actor, Long> {
     Page<Actor> findByIsApprovedTrue(Pageable pageable);
+    Optional<Actor> findByFirstNameAndLastName(String firstName, String lastName);
 
     @Query("SELECT a FROM Actor a LEFT JOIN FETCH a.movies WHERE a.id = :id")
     Optional<Actor> findByIdWithMovies(@Param("id") Long id);

@@ -123,6 +123,3 @@ public class User {
     }
 }
 
-enum Role {
-    USER, MODERATOR, ADMIN
-}

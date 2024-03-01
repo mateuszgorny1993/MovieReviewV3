@@ -18,12 +18,14 @@ public class Director {
     private String lastName;
 
     @Column(nullable = false)
-    private Integer views;
+    private Integer views = 0;
 
     @Column(name = "is_approved", nullable = false)
-    private Boolean isApproved;
+    private Boolean isApproved = true;
+
     @Column(nullable = false)
-    private Double rating;
+    private Double rating = 0.0;
+
     @OneToMany(mappedBy = "director")
     private Set<Movie> movies = new HashSet<>();
 

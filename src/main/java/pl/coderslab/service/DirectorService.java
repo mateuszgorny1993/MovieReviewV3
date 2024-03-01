@@ -68,4 +68,19 @@ public class DirectorService {
         director.setViews(director.getViews() + 1);
         directorRepository.save(director);
     }
+    public Director findByFirstNameAndLastName(String firstName, String lastName) {
+        return directorRepository.findByFirstNameAndLastName(firstName, lastName)
+                .orElseGet(() -> {
+                    Director newDirector = new Director();
+                    newDirector.setFirstName(firstName);
+                    newDirector.setLastName(lastName);
+                    newDirector.setRating(0.0);
+                    newDirector.setViews(0);
+                    return directorRepository.save(newDirector);
+                });
+    }
+    public void save(Director director) {
+        directorRepository.save(director);
+    }
+
 }

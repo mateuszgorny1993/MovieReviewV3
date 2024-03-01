@@ -13,6 +13,7 @@ import pl.coderslab.model.Movie;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, Long> {
     Page<Movie> findByIsApprovedTrue(Pageable pageable);
@@ -29,5 +30,5 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     @Query("SELECT m FROM Movie m JOIN m.actors a WHERE a IN (:actors) AND m.id <> :movieId AND m.isApproved = true")
     List<Movie> findSimilarByActors(@Param("actors") Set<Actor> actors, @Param("movieId") Long movieId);
 
-
+    List<Movie> findByImdbId(String imdbId);
 }

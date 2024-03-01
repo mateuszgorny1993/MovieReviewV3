@@ -1,7 +1,7 @@
 package pl.coderslab.model;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,8 +19,7 @@ public class Movie {
     private String description;
 
     @Column(name = "release_date")
-    @Temporal(TemporalType.DATE)
-    private Date releaseDate;
+    private LocalDate releaseDate;
 
     @Column(name = "poster_path")
     private String posterPath;
@@ -61,7 +60,7 @@ public class Movie {
     )
     private Set<Category> categories = new HashSet<>();
     @Column(name = "imdb_id",nullable = true)
-    private String imdbId; // ID IMDB filmu
+    private String imdbId;
 
     public Movie() {
     }
@@ -90,11 +89,11 @@ public class Movie {
         this.description = description;
     }
 
-    public Date getReleaseDate() {
+    public LocalDate getReleaseDate() {
         return releaseDate;
     }
 
-    public void setReleaseDate(Date releaseDate) {
+    public void setReleaseDate(LocalDate releaseDate) {
         this.releaseDate = releaseDate;
     }
 
