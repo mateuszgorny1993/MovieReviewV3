@@ -7,10 +7,13 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import pl.coderslab.dto.ActorRatingDto;
+import pl.coderslab.dto.DirectorRatingDto;
 import pl.coderslab.dto.MovieRatingDto;
 import pl.coderslab.model.*;
 import pl.coderslab.service.*;
 
+import javax.validation.Valid;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -21,11 +24,8 @@ import java.util.*;
 public class ApplicationController {
 
     private final MovieService movieService;
-
     private final DirectorService directorService;
-
     private final ActorService actorService;
-
     private final NotificationService notificationService;
     private final OmdbApiService omdbApiService;
     private final CategoryService categoryService;
@@ -109,7 +109,7 @@ public class ApplicationController {
     public String addMovieFromOmdb(@ModelAttribute OmdbMovieDetails movieDetails, Model model) {
         try {
             List<Movie> existingMovies = movieService.findByImdbId(movieDetails.getImdbId());
-            if(!existingMovies.isEmpty()) {
+            if (!existingMovies.isEmpty()) {
                 Movie existingMovie = existingMovies.get(0);
                 return "redirect:/app/movies/details/" + existingMovie.getId();
             }
@@ -118,8 +118,6 @@ public class ApplicationController {
             movie.setTitle(movieDetails.getTitle());
             movie.setDescription(movieDetails.getDescription());
             movie.setDuration(Integer.parseInt(movieDetails.getDuration().replaceAll("\\D+", "")));
-            movie.setRating(0.0);
-            movie.setViews(0);
             movie.setOcenaOmdb(Double.parseDouble(movieDetails.getOcenaOmdb()));
             movie.setPosterPath(movieDetails.getPosterPath());
 
@@ -137,10 +135,6 @@ public class ApplicationController {
                 director = new Director();
                 director.setFirstName(firstName);
                 director.setLastName(lastName);
-
-                director.setRating(0.0);
-                director.setViews(0);
-                director.setApproved(true);
 
                 directorService.save(director);
             }
@@ -170,17 +164,12 @@ public class ApplicationController {
                     actor.setFirstName(actorFirstName);
                     actor.setLastName(actorLastName);
 
-                    actor.setViews(0);
-                    actor.setRating(0.0);
-                    actor.setApproved(true);
-
                     actorService.save(actor);
                 }
                 actors.add(actor);
             });
 
             movie.setActors(actors);
-            movie.setApproved(true);
             movieService.save(movie);
 
             notificationService.notifyModeratorsAboutNewMovie(movie.getTitle());
@@ -191,6 +180,93 @@ public class ApplicationController {
             return "appAddMovie";
         }
     }
+    @GetMapping("/actors")
+    public String listActors(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "5") int size,
+            @RequestParam(name = "sortType", defaultValue = "lastName") String sortType,
+            Model model) {
+        Page<Actor> actorsPage = actorService.getApprovedActors(page, size, sortType);
+        model.addAttribute("actorsPage", actorsPage);
+        model.addAttribute("currentSort", sortType);
+        return "appActors";
+    }
+    @GetMapping("/actors/details/{id}")
+    public String showActorDetails(@PathVariable Long id, Model model) {
+        actorService.getActorDetails(id).ifPresent(actor -> {
+            actorService.incrementActorViews(actor.getId());
+            model.addAttribute("actor", actor);
+        });
+        List<Actor> relatedActors = actorService.getRelatedActorsLimited(id);
+        model.addAttribute("relatedActors", relatedActors);
 
+        return "appActorDetails";
+    }
 
+    @PostMapping("/rateactor")
+    public String rateActor(ActorRatingDto actorRatingDto, BindingResult result, RedirectAttributes redirectAttributes) {
+        if (result.hasErrors() || actorRatingDto.getRating() == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Proszę wybrać ocenę.");
+            return "redirect:/app/actors/details/" + actorRatingDto.getActorId();
+        }
+        actorService.addOrUpdateActorRating(actorRatingDto);
+        redirectAttributes.addFlashAttribute("message", "Dziękujemy za ocenę aktora!");
+        return "redirect:/app/actors/details/" + actorRatingDto.getActorId();
+    }
+    @GetMapping("/addActor")
+    public String showActorAddForm(Model model) {
+        model.addAttribute("actor", new Actor());
+        return "appAddActor";
+    }
+    @PostMapping("/addActor")
+    public String processActorAddForm(@Valid @ModelAttribute("actor") Actor actor, BindingResult result) {
+        if (result.hasErrors()) {
+            return "appAddActor";
+        }
+        actorService.save(actor);
+        return "redirect:/app/actors/details/" + actor.getId();
+    }
+    @GetMapping("/directors")
+    public String listDirectors(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "5") int size,
+            @RequestParam(name = "sortType", defaultValue = "lastName") String sortType,
+            Model model) {
+        Page<Director> directorPage = directorService.getApprovedDirectors(page, size, sortType);
+        model.addAttribute("directorsPage", directorPage);
+        model.addAttribute("currentSort", sortType);
+        return "appDirectors";
+    }
+
+    @GetMapping("/directors/details/{id}")
+    public String showDirectorDetails(@PathVariable Long id, Model model) {
+        directorService.incrementDirectorViews(id);
+        Director director = directorService.getDirectorDetails(id)
+                .orElseThrow(() -> new IllegalArgumentException("Director not found for ID: " + id));
+        model.addAttribute("director", director);
+
+        Set<Actor> relatedActors = actorService.findActorsByDirector(director);
+        model.addAttribute("relatedActors", relatedActors);
+
+        return "appDirectorDetails";
+    }
+    @PostMapping("/ratedirector")
+    public String rateDirector(@ModelAttribute DirectorRatingDto directorRatingDto, RedirectAttributes redirectAttributes) {
+        directorService.addOrUpdateDirectorRating(directorRatingDto);
+        redirectAttributes.addFlashAttribute("message", "Dziękujemy za ocenę reżysera!");
+        return "redirect:/app/directors/details/" + directorRatingDto.getDirectorId();
+    }
+    @GetMapping("/addDirector")
+    public String showDirectorAddForm(Model model) {
+        model.addAttribute("director", new Director());
+        return "appAddDirector";
+    }
+    @PostMapping("/addDirector")
+    public String processDirectorAddForm(@Valid @ModelAttribute("director") Director director, BindingResult result) {
+        if (result.hasErrors()) {
+            return "appAddDirector";
+        }
+        directorService.save(director);
+        return "redirect:/app/directors/details/" + director.getId();
+    }
 }

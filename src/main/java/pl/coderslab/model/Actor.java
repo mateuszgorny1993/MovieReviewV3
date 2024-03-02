@@ -24,7 +24,7 @@ public class Actor {
     private Integer views = 0;
 
     @Column(name = "is_approved", nullable = false)
-    private Boolean isApproved = true;
+    private Boolean isApproved = false;
 
     @ManyToMany(mappedBy = "actors", fetch = FetchType.EAGER)
     private Set<Movie> movies = new HashSet<>();

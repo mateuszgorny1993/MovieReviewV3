@@ -131,4 +131,23 @@ public class MovieService {
     public List<Movie> findByImdbId(String imdbId) {
         return movieRepository.findByImdbId(imdbId);
     }
+
+    public List<Movie> findUnapprovedMovies() {
+        return movieRepository.findByIsApprovedFalse();
+    }
+    public List<Movie> findAllByIsApproved(boolean isApproved) {
+        return movieRepository.findAllByIsApproved(isApproved);
+    }
+
+    public void approveMovie(Long id) {
+        movieRepository.findById(id).ifPresent(movie -> {
+            movie.setApproved(true);
+            movieRepository.save(movie);
+        });
+    }
+
+    public void deleteMovie(Long id) {
+        movieRepository.deleteById(id);
+    }
+
 }

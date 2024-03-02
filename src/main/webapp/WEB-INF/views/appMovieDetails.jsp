@@ -6,7 +6,7 @@
 <body>
 <header class="page-header">
   <nav class="navbar navbar-expand-lg justify-content-between">
-    <a href="/dashboard" class="navbar-brand main-logo main-logo-smaller">
+    <a href="/app/dashboard" class="navbar-brand main-logo main-logo-smaller">
       Movie <span>Review</span>
     </a>
     <div class="d-flex justify-content-around">
@@ -30,8 +30,7 @@
         <div class="border-dashed view-height w-100">
           <div class="mt-4 ml-4 mr-4">
             <div class="row border-bottom border-3">
-              <div class="col"><h3 class="color-header text-uppercase">
-                Reżyseria: ${movie.director.firstName} ${movie.director.lastName}</h3></div>
+              <div class="col"><h3 class="color-header text-uppercase">${movie.title}</h3></div>
               <div class="col d-flex justify-content-end mb-2">
                 <a href="/app/movies" class="btn btn-color rounded-0 pt-0 pb-0 pr-2 pl-2">Powrót</a>
                 <c:if test="${not empty errorMessage}">
@@ -61,6 +60,10 @@
             </div>
             <table class="table borderless">
               <tbody>
+              <tr class="d-flex">
+                <th scope="row" class="col-2">Reżyseria</th>
+                <td class="col-7">${movie.director.firstName} ${movie.director.lastName}</td>
+              </tr>
               <tr class="d-flex">
                 <th scope="row" class="col-2">Kategorie</th>
                 <td class="col-7">
@@ -98,7 +101,9 @@
               </div>
               <div class="col-3 border-bottom border-3"><h3 class="text-uppercase">Obsada filmu</h3>
                 <c:forEach items="${movie.actors}" var="actor">
-                  <div>${actor.firstName} ${actor.lastName}</div>
+                  <a href="/app/actors/details/${actor.id}">
+                    <div>${actor.firstName} ${actor.lastName}</div>
+                  </a>
                 </c:forEach>
               </div>
               <div class="col-6 border-bottom border-3"><h3 class="text-uppercase">Zwiastuny filmu</h3>

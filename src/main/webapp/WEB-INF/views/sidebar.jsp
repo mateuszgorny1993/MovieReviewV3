@@ -50,7 +50,7 @@
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" href="/app/admin">
+        <a class="nav-link" href="/app/admin/dashboard">
             <span>Administracja</span>
             <i class="fas fa-angle-right"></i>
         </a>

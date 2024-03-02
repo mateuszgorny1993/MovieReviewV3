@@ -21,7 +21,7 @@ public class Director {
     private Integer views = 0;
 
     @Column(name = "is_approved", nullable = false)
-    private Boolean isApproved = true;
+    private Boolean isApproved = false;
 
     @Column(nullable = false)
     private Double rating = 0.0;

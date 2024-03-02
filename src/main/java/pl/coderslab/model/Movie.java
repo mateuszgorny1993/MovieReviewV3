@@ -24,16 +24,17 @@ public class Movie {
     @Column(name = "poster_path")
     private String posterPath;
 
-    private Double rating; // Ocena nasza
+    @Column(nullable = false)
+    private Double rating = 0.0;
 
     @Column(name = "ocena_omdb")
-    private Double ocenaOmdb; // Ocena OMDB
+    private Double ocenaOmdb;
 
     @Column(name = "is_approved", nullable = false)
-    private Boolean isApproved;
+    private Boolean isApproved = false;
 
     @Column(nullable = false)
-    private Integer views;
+    private Integer views = 0;
 
     @ManyToOne
     @JoinColumn(name = "director_id")
@@ -59,7 +60,7 @@ public class Movie {
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
     private Set<Category> categories = new HashSet<>();
-    @Column(name = "imdb_id",nullable = true)
+    @Column(name = "imdb_id")
     private String imdbId;
 
     public Movie() {

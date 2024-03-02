@@ -17,6 +17,9 @@ import java.util.Set;
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, Long> {
     Page<Movie> findByIsApprovedTrue(Pageable pageable);
+    List<Movie> findAllByIsApprovedTrue();
+    List<Movie> findByIsApprovedFalse();
+    List<Movie> findAllByIsApproved(Boolean isApproved);
 
     @Query("SELECT m FROM Movie m WHERE m.releaseDate > CURRENT_DATE AND m.isApproved = true")
     Page<Movie> findUpcomingMovies(Pageable pageable);

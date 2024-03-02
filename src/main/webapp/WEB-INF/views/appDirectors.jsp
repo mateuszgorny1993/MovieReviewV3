@@ -23,46 +23,40 @@
         <div class="m-4 p-3 width-medium">
             <div class="dashboard-content border-dashed p-3 m-4 view-height">
                 <div class="row border-bottom border-3 p-1 m-1">
-                    <div class="col noPadding"><h3 class="color-header text-uppercase">Lista Filmów</h3></div>
-                    <div class="col noPadding d-flex justify-content-end mb-2"><a href="/app/addMovie" class="btn btn-success rounded-0 pt-0 pb-0 pr-4 pl-4">Dodaj film</a></div>
+                    <div class="col noPadding"><h3 class="color-header text-uppercase">Lista Reżyserów</h3></div>
+                    <div class="col noPadding d-flex justify-content-end mb-2"><a href="/app/addDirector" class="btn btn-success rounded-0 pt-0 pb-0 pr-4 pl-4">Dodaj reżysera</a></div>
                 </div>
                 <table class="table">
                     <div>
                         <label for="sortOptions">Sortuj:</label>
                         <select id="sortOptions" onchange="sortMovies(this.value)">
-                            <option value="?sortType=title">Alfabetycznie</option>
-                            <option value="?sortType=ratingDesc">Ocena (malejąco)</option>
+                            <option value="?sortType=lastName">Alfabetycznie</option>
                             <option value="?sortType=viewsDesc">Wyświetlenia (malejąco)</option>
-                            <option value="?sortType=ratingAsc">Ocena (rosnąco)</option>
                             <option value="?sortType=viewsAsc">Wyświetlenia (rosnąco)</option>
                         </select>
                     </div>
                     <thead>
                     <tr class="d-flex text-color-darker">
-                        <th scope="col" class="col-2">BANNER</th>
-                        <th scope="col" class="col-3">TYTUŁ</th>
-                        <th scope="col" class="col-2">OPIS</th>
-                        <th scope="col" class="col-1">OCENA</th>
-                        <th scope="col" class="col-1">WYŚWIETLENIA</th>
+                        <th scope="col" class="col-4">IMIĘ</th>
+                        <th scope="col" class="col-4">NAZWISKO</th>
+                        <th scope="col" class="col-2">WYŚWIETLENIA</th>
                         <th scope="col" class="col-2">AKCJE</th>
                     </tr>
                     </thead>
                     <tbody class="text-color-lighter">
-                    <c:forEach items="${moviesPage.content}" var="movie">
+                    <c:forEach items="${directorsPage.content}" var="director">
                         <tr class="d-flex">
-                            <td class="col-2"><img src="${movie.posterPath}" alt="Banner" style="width:80px;height:auto;"></td>
-                            <td class="col-3">${movie.title}</td>
-                            <td class="col-2">${movie.description}</td>
-                            <td class="col-1">${movie.rating}</td>
-                            <td class="col-1">${movie.views}</td>
-                            <td class="col-2"><a href="movies/details/${movie.id}" class="btn btn-info rounded-0 text-light">Szczegóły</a></td>
+                            <td class="col-4">${director.firstName}</td>
+                            <td class="col-4">${director.lastName}</td>
+                            <td class="col-2">${director.views}</td>
+                            <td class="col-2"><a href="directors/details/${director.id}" class="btn btn-info rounded-0 text-light">Szczegóły</a></td>
                         </tr>
                     </c:forEach>
                     </tbody>
                 </table>
                 <div>
-                    <c:forEach begin="0" end="${moviesPage.totalPages - 1}" var="i">
-                        <a href="?page=${i}&size=${moviesPage.size}&sortType=${param.sortType}">${i + 1}</a>
+                    <c:forEach begin="0" end="${directorsPage.totalPages - 1}" var="i">
+                        <a href="?page=${i}&size=${directorsPage.size}&sortType=${param.sortType}">${i + 1}</a>
                     </c:forEach>
                 </div>
 

@@ -94,7 +94,9 @@
                     </div>
                     <div class="col-3 border-bottom border-3"><h3 class="text-uppercase">Obsada filmu</h3>
                         <c:forEach items="${movie.actors}" var="actor">
-                            <div>${actor.firstName} ${actor.lastName}</div>
+                            <a href="/guest/actors/details/${actor.id}">
+                                <div>${actor.firstName} ${actor.lastName}</div>
+                            </a>
                         </c:forEach>
                     </div>
                     <div class="col-6 border-bottom border-3"><h3 class="text-uppercase">Zwiastuny filmu</h3>
